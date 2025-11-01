@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Plugins
 import helmet from '@fastify/helmet';
@@ -34,6 +35,24 @@ async function bootstrap() {
 
   // Global prefix
   app.setGlobalPrefix('api');
+
+  // Swagger setup
+  const config = new DocumentBuilder()
+    .setTitle('Nest Challenge API')
+    .setDescription('API Documentation of the Nest Challenge in Inswitch')
+    .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT',
+      description: 'Enter JWT token',
+      in: 'header',
+    })
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
 
   const logger = new Logger('Main');
   await app.listen(process.env.PORT ?? 3000);
