@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import envConfig from './config/env.config';
 
+import { PrismaModule } from './database/prisma.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -13,6 +15,7 @@ import envConfig from './config/env.config';
       expandVariables: true,
       load: [envConfig],
     }),
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
