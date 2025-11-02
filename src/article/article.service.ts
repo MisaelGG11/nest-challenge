@@ -56,7 +56,16 @@ export class ArticleService {
       Math.min(Number(paginationOptions?.perPage), 100),
     );
 
-    const where = {};
+    // Add filters
+    const where: Record<string, any> = { deletedAt: null };
+
+    if (filters.title) {
+      where.title = { contains: filters.title, mode: 'insensitive' };
+    }
+
+    if (filters.authorId) {
+      where.authorId = filters.authorId;
+    }
 
     if (!paginationOptions.paginate) {
       const rows = await this.prisma.article.findMany({

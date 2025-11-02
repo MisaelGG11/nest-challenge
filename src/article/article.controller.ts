@@ -27,6 +27,7 @@ import {
 import { filterPaginationProperties } from 'src/common/utils/filter-pagination-properties';
 import { PaginatedResultDto } from 'src/common/dto/paginated-result.dto';
 import { ArticleDto } from './dto/response/article.dto';
+import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 
 @ApiTags('articles')
 @ApiBearerAuth()
@@ -53,6 +54,7 @@ export class ArticleController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'List articles with filters and pagination' })
+  @ApiPaginatedResponse(ArticleDto, true) //  Can avoid pagination
   async findAll(
     @Query() filteredPagination: FilteredArticlePagination,
   ): Promise<PaginatedResultDto<ArticleDto> | ArticleDto[]> {
