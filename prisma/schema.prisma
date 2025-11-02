@@ -16,12 +16,19 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
+  // Unique constraint is not used here to allow soft deletes
+  // But without that you can use `@unique` directive
+  email     String
   password  String
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   articles  Article[]
+
+  deletedAt DateTime?
+
+// Add an index on deletedAt for efficient queries
+  @@index([deletedAt])
 }
 
 model Article {
@@ -32,4 +39,8 @@ model Article {
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Add an index on deletedAt for efficient queries
+  @@index([deletedAt])
 }
