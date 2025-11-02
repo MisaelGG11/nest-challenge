@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -127,7 +128,7 @@ export class ArticleService {
 
     // Optional ownership check;
     if (existing.authorId !== userId) {
-      throw new NotFoundException('Article does not belong to user');
+      throw new ForbiddenException('Article does not belong to user');
     }
 
     try {
@@ -160,7 +161,7 @@ export class ArticleService {
     if (!existing) throw new NotFoundException('Article not found');
 
     if (existing.authorId !== userId) {
-      throw new NotFoundException('Article does not belong to user');
+      throw new ForbiddenException('Article does not belong to user');
     }
 
     const article = await this.prisma.article.update({

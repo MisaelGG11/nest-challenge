@@ -64,6 +64,7 @@ export class ArticleController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a single article by id' })
+  @ApiErrorResponses([HttpStatus.NOT_FOUND])
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<ArticleDto> {
     return this.articleService.findOne(id);
   }
@@ -71,6 +72,7 @@ export class ArticleController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update an article (owner only)' })
+  @ApiErrorResponses([HttpStatus.NOT_FOUND, HttpStatus.FORBIDDEN])
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateArticleDto,
@@ -81,6 +83,7 @@ export class ArticleController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
+  @ApiErrorResponses([HttpStatus.NOT_FOUND, HttpStatus.FORBIDDEN])
   @ApiOperation({ summary: 'Soft delete an article (owner only)' })
   async remove(
     @Param('id', ParseIntPipe) id: number,
