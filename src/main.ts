@@ -11,6 +11,10 @@ import helmet from '@fastify/helmet';
 import cors from '@fastify/cors';
 import compress from '@fastify/compress';
 
+// Errors handling
+import { HttpAdapterHost } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -27,6 +31,10 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // Globar filters
+  const adapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(adapterHost));
 
   // Fastify plugins
 
