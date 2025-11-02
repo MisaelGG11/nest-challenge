@@ -56,7 +56,7 @@ export class AuthService {
     );
     const decodedRefresh = this.jwt.decode(refreshToken);
 
-    // Persistir hash de refresh
+    // Persist hashed refresh token
     const tokenHash = await bcrypt.hash(refreshToken, 12);
     await this.prisma.refreshToken.create({
       data: {

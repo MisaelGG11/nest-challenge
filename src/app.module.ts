@@ -8,6 +8,7 @@ import envConfig from './config/env.config';
 import { PrismaModule } from './database/prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ArticleModule } from './article/article.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     UserModule,
     AuthModule,
+    ArticleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
