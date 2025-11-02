@@ -9,6 +9,13 @@ interface ErrorResponse {
   example: object;
 }
 
+const commonProps = {
+  path: '/path/to/resource',
+  method: 'POST',
+  requestId: 'unique-request-id',
+  timestamp: new Date().toISOString(),
+};
+
 const errorResponses: ErrorResponse[] = [
   {
     status: HttpStatus.BAD_REQUEST,
@@ -17,6 +24,7 @@ const errorResponses: ErrorResponse[] = [
       error: 'Bad Request',
       statusCode: HttpStatus.BAD_REQUEST,
       message: 'Invalid data',
+      ...commonProps,
     },
   },
   {
@@ -25,7 +33,7 @@ const errorResponses: ErrorResponse[] = [
     example: {
       error: 'Unauthorized',
       statusCode: HttpStatus.UNAUTHORIZED,
-      message: 'Unauthorized access',
+      ...commonProps,
     },
   },
   {
@@ -35,6 +43,7 @@ const errorResponses: ErrorResponse[] = [
       error: 'Forbidden',
       statusCode: HttpStatus.FORBIDDEN,
       message: 'Forbidden resource',
+      ...commonProps,
     },
   },
   {
@@ -44,6 +53,7 @@ const errorResponses: ErrorResponse[] = [
       error: 'Internal Server Error',
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Internal server error',
+      ...commonProps,
     },
   },
   {
@@ -53,6 +63,7 @@ const errorResponses: ErrorResponse[] = [
       error: 'Not Found',
       statusCode: HttpStatus.NOT_FOUND,
       message: 'Resource not found',
+      ...commonProps,
     },
   },
   {
@@ -62,6 +73,7 @@ const errorResponses: ErrorResponse[] = [
       error: 'Unprocessable Entity',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       message: 'Invalid data',
+      ...commonProps,
     },
   },
   {
@@ -71,6 +83,7 @@ const errorResponses: ErrorResponse[] = [
       error: 'Conflict',
       statusCode: HttpStatus.CONFLICT,
       message: 'Resource conflict',
+      ...commonProps,
     },
   },
 ];

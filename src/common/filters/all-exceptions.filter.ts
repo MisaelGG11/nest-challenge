@@ -74,7 +74,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const body = {
       statusCode: status,
       message,
-      error,
       code, // prisma code or custom code (optional)
       path: req?.url,
       method: req?.method,
