@@ -16,18 +16,19 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  // Unique constraint is not used here to allow soft deletes
+    // Unique constraint is not used here to allow soft deletes
   // But without that you can use `@unique` directive
   email     String
   password  String
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  articles  Article[]
-
   deletedAt DateTime?
 
-// Add an index on deletedAt for efficient queries
+  // relations
+  refreshTokens RefreshToken[]
+  articles  Article[]
+
   @@index([deletedAt])
 }
 
@@ -43,4 +44,21 @@ model Article {
 
   // Add an index on deletedAt for efficient queries
   @@index([deletedAt])
+}
+
+// Refresh tokens con revocación y expiración
+model RefreshToken {
+  id         Int       @id @default(autoincrement())
+  jti        String    @unique
+  tokenHash  String
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
