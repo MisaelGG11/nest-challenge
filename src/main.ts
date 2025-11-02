@@ -32,7 +32,7 @@ async function bootstrap() {
 
   // CORS configuration
   await app.register(cors, {
-    origin: ['*'], // ajusta a tus orígenes
+    origin: ['*'],
     credentials: true,
   });
 

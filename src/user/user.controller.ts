@@ -77,6 +77,6 @@ export class UserController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user by id' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
-    return await this.userService.remove(id);
+    return this.userService.remove(id);
   }
 }

@@ -21,7 +21,6 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
-  private readonly DEFAULT_LIMIT = 20;
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -62,7 +61,7 @@ export class UserService {
     const page = Math.max(1, Number(paginationOptions?.page ?? 1));
     const perPage = Math.max(
       1,
-      Math.min(Number(paginationOptions?.perPage ?? this.DEFAULT_LIMIT), 100),
+      Math.min(Number(paginationOptions?.perPage), 100),
     );
 
     const { email } = filterOptions ?? {};
@@ -139,12 +138,11 @@ export class UserService {
     }
 
     try {
-      const { email, name, password } = updateUserDto;
+      const { email, name } = updateUserDto;
 
       const data: Record<string, unknown> = {};
       if (email !== undefined) data.email = email.toLowerCase();
       if (name !== undefined) data.name = name;
-      if (password !== undefined) data.password = password;
 
       const user = await this.prisma.user.update({
         where: { id },
