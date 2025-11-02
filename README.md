@@ -1,98 +1,149 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Challenge
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Suite de ejemplos con NestJS + TypeScript + Prisma enfocada en autenticación JWT (con refresh), CRUD de entidades relacionadas, validación robusta, manejo de errores estructurado y documentación con Swagger.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Guía rápida (Windows)
+- Requisitos: Node 20+ y npm
+- Instalar dependencias:
+  - npm install
+- Variables de entorno:
+  - Copia .env.example o crea .env con las variables listadas abajo
+- Migraciones de base de datos (Prisma):
+  - npx prisma migrate dev
+  - npx prisma generate
+- Desarrollo :
+  - npm run start:dev
+- Documentación Swagger (según configuración):
+  - http://localhost:3000/api/docs
 
-## Description
+Variables de entorno
+- DATABASE_URL=postgresql://user:pass@localhost:5432/dbname?schema=public
+- API_STAGE=development
+- API_HOST=localhost
+- API_PORT=3000
+- CORS_ORIGIN=http://localhost:3000
+- ENABLE_SWAGGER=true
+- JWT_SECRET=your-strong-secret
+- JWT_EXPIRES_IN=3600s             # acepta número (segundos) o formato con unidad ("1h", "3600s")
+- JWT_REFRESH_EXPIRES_IN=604800    # segundos (ej. 7 días) o "7d"
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tecnologías principales
+- NestJS (Fastify adapter)
+- TypeScript
+- Prisma (ORM) + PostgreSQL
+- Passport JWT (@nestjs/jwt, passport-jwt)
+- class-validator / class-transformer
+- Swagger (OpenAPI) para documentación
 
-## Project setup
+Características implementadas
 
-```bash
-$ npm install
+1) Autenticación y autorización (JWT + Refresh)
+- Registro y login con hashing de contraseñas (bcrypt)
+- Access token (Bearer) y refresh token con rotación (jti)
+- Revocación de refresh tokens y auditoría (IP / User-Agent)
+- Guard/Strategy JWT para proteger rutas (users, articles)
+
+Endpoints Auth
+- POST /auth/register → { token, tokenType: 'bearer', expiresIn, refreshToken }
+- POST /auth/login → { token, tokenType: 'bearer', expiresIn, refreshToken }
+- POST /auth/refresh → rota refresh y devuelve nuevos tokens
+- POST /auth/logout → revoca el refresh provisto (204 No Content)
+
+2) CRUD completo de 2 entidades relacionadas
+- User (soft delete con deletedAt)
+- Article (relación con User como author)
+- Listados con filtros y paginación
+- Paginado Condicional en GET de Article
+- Ownership en actualización/eliminación de Article (403 Forbidden si no es el autor)
+
+3) Validación de datos
+- DTOs con class-validator
+- ValidationPipe global (whitelist, transform, forbidNonWhitelisted)
+
+4) Manejo de errores estructurado
+- Filtro global AllExceptionsFilter
+- Respuestas uniformes con statusCode, message, error, path, method, timestamp
+- Mapeo de errores de Prisma (P2002=409, P2025=404, etc.)
+
+5) Documentación con Swagger
+- Esquema Bearer Auth para probar endpoints protegidos
+- Decoradores por endpoint (errores comunes y específicos)
+- Decorador custom para paginación
+- DTOs inferidos con ayuda del plugin de Swagger en Nest
+
+
+Soft delete:
+- Users marcados con deletedAt no aparecen en listados por defecto
+- Unicidad de email recomendada con índice parcial (email único solo cuando deletedAt IS NULL)
+
+Estructura del proyecto
+
+```text
+/nest-challenge
+├── prisma
+│  ├── schema.prisma
+│  └── migrations
+├── src
+│  ├── app.module.ts
+│  ├── main.ts
+│  ├── common
+│  │  ├── decorators
+│  │  │  └── api-error-responses.decorator.ts
+│  │  ├── dto
+│  │  │  ├── paginated-result.dto.ts
+│  │  │  └── pagination-options.dto.ts
+│  │  ├── filters
+│  │  │  └── all-exceptions.filter.ts
+│  │  └── utils
+│  │     └── calculate-pagination.ts
+│  ├── database
+│  │  ├── prisma.module.ts
+│  │  └── prisma.service.ts
+│  ├── auth
+│  │  ├── auth.controller.ts
+│  │  ├── auth.module.ts
+│  │  ├── auth.service.ts
+│  │  ├── dto
+│  │  │  ├── request
+│  │  │  │  ├── login.dto.ts
+│  │  │  │  └── refresh-token.dto.ts
+│  │  │  └── response
+│  │  │     └── token-response.dto.ts
+│  │  ├── guards
+│  │  │  └── jwt-auth.guard.ts
+│  │  └── strategies
+│  │     └── jwt.strategy.ts
+│  ├── user
+│  │  ├── user.controller.ts
+│  │  ├── user.module.ts
+│  │  ├── user.service.ts
+│  │  └── dto
+│  │     ├── request
+│  │     │  ├── create-user.dto.ts
+│  │     │  ├── update-user.dto.ts
+│  │     │  └── user-filter-options.dto.ts
+│  │     └── response
+│  │        └── user.dto.ts
+│  └── article
+│     ├── article.controller.ts
+│     ├── article.module.ts
+│     ├── article.service.ts
+│     └── dto
+│        ├── request
+│        │  ├── create-article.dto.ts
+│        │  ├── update-article.dto.ts
+│        │  └── article-filter-options.dto.ts
+│        └── response
+│           └── article.dto.ts
+├── .env
+├── package.json
+└── tsconfig.json
 ```
 
-## Compile and run the project
+Notas de seguridad
+- JWT_SECRET deberia ser una clave segura
+- Asegura una correcta conexión de tu base de datos con DATABASE_URL
+- Usa variables de entorno distintas por entorno (dev/test/prod)
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Licencia
+- Uso educativo/demostrativo.
