@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import envConfig from './config/env.config';
 
 import { PrismaModule } from './database/prisma.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PrismaModule } from './database/prisma.module';
       load: [envConfig],
     }),
     PrismaModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
