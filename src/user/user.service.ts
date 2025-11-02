@@ -16,6 +16,8 @@ import { ResultPagination } from 'src/common/interfaces/result-pagination.interf
 import { plainToInstance } from 'class-transformer';
 import { calculatePagination } from 'src/common/utils/calculate-pagination';
 
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -26,19 +28,23 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<UserDto> {
     const email = createUserDto.email.toLowerCase();
 
-    // Verifica duplicado entre usuarios activos (deletedAt: null)
+    // Verifify email uniqueness
     const existing = await this.prisma.user.findFirst({
       where: { email, deletedAt: null },
     });
     if (existing) {
-      throw new BadRequestException('Email is already registered');
+      throw new ConflictException('Email already in use');
     }
+
+    // Password encryption with bcrypt
+    const hashedPassword = bcrypt.hashSync(createUserDto.password, 10);
 
     try {
       const user = await this.prisma.user.create({
         data: {
           ...createUserDto,
           email,
+          password: hashedPassword,
         },
       });
 

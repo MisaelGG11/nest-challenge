@@ -8,11 +8,11 @@ import {
   Delete,
   Query,
   ParseIntPipe,
-  Logger,
   HttpStatus,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/request/create-user.dto';
@@ -26,6 +26,7 @@ import { filterPaginationProperties } from 'src/common/utils/filter-pagination-p
 import { UserDto } from './dto/response/user.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { PaginatedResultDto } from 'src/common/dto/paginated-result.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
 @ApiErrorResponses([
@@ -33,17 +34,16 @@ import { PaginatedResultDto } from 'src/common/dto/paginated-result.dto';
   HttpStatus.UNAUTHORIZED,
   HttpStatus.INTERNAL_SERVER_ERROR,
 ])
+@ApiBearerAuth() // Authentication in Swagger
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
-  private readonly logger = new Logger(UserController.name);
-
   constructor(private readonly userService: UserService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create user' })
   async create(@Body() createUserDto: CreateUserDto) {
-    this.logger.log(`Creating user ${createUserDto.email}`);
     return this.userService.create(createUserDto);
   }
 
