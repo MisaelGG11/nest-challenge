@@ -1,4 +1,4 @@
-import { IsInt, IsString, MaxLength, Min, MinLength } from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateArticleDto {
   @IsString()
@@ -9,8 +9,4 @@ export class CreateArticleDto {
   @IsString()
   @MinLength(1)
   content!: string;
-
-  @IsInt()
-  @Min(1)
-  authorId!: number;
 }
