@@ -64,6 +64,15 @@ const errorResponses: ErrorResponse[] = [
       message: 'Invalid data',
     },
   },
+  {
+    status: HttpStatus.CONFLICT,
+    description: 'Conflict',
+    example: {
+      error: 'Conflict',
+      statusCode: HttpStatus.CONFLICT,
+      message: 'Resource conflict',
+    },
+  },
 ];
 
 export function ApiErrorResponses(statuses: HttpStatus[] = []) {
